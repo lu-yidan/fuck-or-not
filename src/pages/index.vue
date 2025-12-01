@@ -12,7 +12,7 @@ import ButtonSelect from '~/components/ButtonSelect.vue'
 import ImageUploader from '~/components/ImageUploader.vue'
 import Select from '~/components/Select.vue'
 import { fileToBase64, generateContent, googleApiKey, uploadFileToAPI } from '~/logic'
-import { defaultConcisePrompt, defaultDetailedPrompt, defaultNovelPrompt } from '~/logic/prompts'
+import { defaultAlwaysWantPrompt, defaultConcisePrompt, defaultDetailedPrompt, defaultNovelPrompt } from '~/logic/prompts'
 
 defineOptions({
   name: 'IndexPage',
@@ -26,9 +26,10 @@ const base64Image = ref<string | null>(null)
 const concisePrompt = useStorage('concise-prompt', '')
 const detailedPrompt = useStorage('detailed-prompt', '')
 const novelPrompt = useStorage('novel-prompt', '')
+const alwaysWantPrompt = useStorage('always-want-prompt', '')
 const customPrompts = useStorage('custom-prompt', '')
 const selectedModel = useStorage('selected-model', 'gemini-2.0-flash')
-const selectedMode = useStorage<'concise' | 'detailed' | 'novel' | 'custom'>('selected-mode', 'novel')
+const selectedMode = useStorage<'concise' | 'detailed' | 'novel' | 'always-want' | 'custom'>('selected-mode', 'novel')
 const uploadType = useStorage<'base64' | 'api'>('upload-type', 'base64')
 const result = ref('')
 const errorMsg = ref('')
@@ -62,6 +63,7 @@ const modeOptions = computed(() => {
     { label: '简洁', subLabel: '简短1-2句，够味', value: 'concise' },
     { label: '详细', subLabel: '细嗦3+句，够劲', value: 'detailed' },
     { label: '小说', subLabel: '400字以上，够硬核', value: 'novel' },
+    { label: '无差别想要', subLabel: '看到什么都想要', value: 'always-want' },
   ]
   if (customPrompts.value !== '') {
     options.push({ label: '自定义', subLabel: 'XP，够自由', value: 'custom' })
@@ -98,6 +100,9 @@ async function handleAnalyseButtonClick() {
         break
       case 'novel':
         finalPrompt = novelPrompt.value || defaultNovelPrompt
+        break
+      case 'always-want':
+        finalPrompt = alwaysWantPrompt.value || defaultAlwaysWantPrompt
         break
       default:
         finalPrompt = customPrompts.value

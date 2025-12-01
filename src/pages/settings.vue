@@ -2,26 +2,29 @@
 import { useStorage } from '@vueuse/core'
 import Input from '~/components/Input.vue'
 import Textarea from '~/components/Textarea.vue'
-import { defaultConcisePrompt, defaultDetailedPrompt, defaultNovelPrompt } from '~/logic/prompts'
+import { defaultAlwaysWantPrompt, defaultConcisePrompt, defaultDetailedPrompt, defaultNovelPrompt } from '~/logic/prompts'
 
 const googleApiKey = useStorage('google-api-key', '')
 const concisePrompt = useStorage('concise-prompt', '')
 const detailedPrompt = useStorage('detailed-prompt', '')
 const novelPrompt = useStorage('novel-prompt', '')
+const alwaysWantPrompt = useStorage('always-want-prompt', '')
 const customPrompts = useStorage('custom-prompt', '')
 
 const defaultPrompts = [
   defaultConcisePrompt,
   defaultDetailedPrompt,
   defaultNovelPrompt,
+  defaultAlwaysWantPrompt,
 ]
 const prompts = [
   concisePrompt,
   detailedPrompt,
   novelPrompt,
+  alwaysWantPrompt,
 ]
 
-function getDefaultPrompt(mode: 0 | 1 | 2) {
+function getDefaultPrompt(mode: 0 | 1 | 2 | 3) {
   const defaultPrompt = defaultPrompts[mode]
   const prompt = prompts[mode]
 
@@ -33,7 +36,7 @@ function getDefaultPrompt(mode: 0 | 1 | 2) {
   prompt.value = defaultPrompt
 }
 
-function clearPrompt(mode: 0 | 1 | 2) {
+function clearPrompt(mode: 0 | 1 | 2 | 3) {
   const prompt = prompts[mode]
   if (prompt.value.trim() !== '') {
     if (!confirm('当前模式的 Prompt 已被自定义，清空将丢失现有内容，是否继续？')) {
@@ -106,6 +109,22 @@ function clearPrompt(mode: 0 | 1 | 2) {
     >清空</a>
   </span>
   <Textarea v-model="novelPrompt" placeholder="留空将使用默认配置......" />
+
+  <div py-4 />
+  <span label ml-0.5>
+    无差别想要模式 Prompt
+    <a
+      target="_blank"
+      ml-1 underline cursor-pointer op-70
+      @click.prevent="getDefaultPrompt(3)"
+    >获取默认 Prompt</a>
+    <a
+      target="_blank"
+      ml-2 underline cursor-pointer op-70
+      @click.prevent="clearPrompt(3)"
+    >清空</a>
+  </span>
+  <Textarea v-model="alwaysWantPrompt" placeholder="留空将使用默认配置......" />
 
   <div py-4 />
   <span label ml-0.5>
